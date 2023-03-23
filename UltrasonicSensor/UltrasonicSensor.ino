@@ -27,45 +27,29 @@ void setup() {
   pinMode(soundbuzzer, OUTPUT);
 }
 void  loop() {
-  long durationindigit, distanceincm;
+  long durationindigit, distanceinft;
   digitalWrite(trigPin, LOW);  
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   durationindigit = pulseIn(echoPin, HIGH);
-  distanceincm = (durationindigit/5) / 29.1;
+  distanceinft = (durationindigit/5) / 29.1;
  
-  if (distanceincm < 50) {
-      digitalWrite(LEDlampGreen, HIGH);
-}
-  else {
-      digitalWrite(LEDlampGreen,  LOW);
+  if (distanceinft > 10){
+    Serial.println("No detected car in your blind spot - change lanes when needed.");
   }
-  
-  if (distance < 20) {
-    digitalWrite(LEDlampYellow,  HIGH);
-}
-  else {
-    digitalWrite(LEDlampYellow,LOW);
-  }
-  if (distance  < 5) {
-    digitalWrite(LEDlampRed, HIGH);
-    sound = 1000;
-}
-  else  {
-    digitalWrite(LEDlampRed,LOW);
-  }
- 
-  if (distanceincm > 5 ||  distanceinsm <= 0){
-    Serial.println("Outside the permissible range of distances");
-    noTone(soundbuzzer);
+
+  if (distanceinft <= 10 && distanceinft >=7) {
+    digitalWrite(LEDlampGreen, HIGH);
+    Serial.println("There is another car within");
+    Serial.print(distanceinft);
+    Serial.println(" feet from your blind spot \nGetting Close - change lanes with caution");
+    
   }
   else {
-    Serial.print(distance);
-    Serial.println("  cm");
-    tone(buzzer, sound);
+    digitalWrite(LEDlampGreen, LOW);
   }
-  
-  delay(300);
+
+  delay(1000);
 }
