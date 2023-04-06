@@ -44,7 +44,7 @@ void  loop() {
     digitalWrite(LEDlampGreen, HIGH);
     Serial.println("There is another car within");
     Serial.print(distanceinft);
-    Serial.println(" feet from your blind spot \nGetting Close - change lanes with caution");
+    Serial.println(" feet from your blind spot \nGetting Close - change lanes with caution\n");
     
   }
   else {
