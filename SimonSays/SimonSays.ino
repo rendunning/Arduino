@@ -1,185 +1,66 @@
-/*This sketch is a simple version of the famous Simon Says game. You can  use it and improved it adding
-levels and everything you want to increase the  diffuculty!
+const int zero[7] = {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, LOW};
+const int one[7] = {LOW, HIGH, HIGH, LOW, LOW, LOW, LOW};
+const int two[7] = {HIGH, HIGH, LOW, HIGH, HIGH, LOW, HIGH};
+const int three[7] = {HIGH, HIGH, HIGH, HIGH, LOW, LOW, HIGH};
+const int four[7] = {LOW, HIGH, HIGH, LOW, LOW, HIGH, HIGH};
+const int five[7] = {HIGH, LOW, HIGH, HIGH, LOW, HIGH, HIGH};
+const int six[7] = {HIGH, LOW, HIGH, HIGH, HIGH, HIGH, HIGH};
+const int seven[7] = {HIGH, HIGH, HIGH, LOW, LOW, LOW, LOW};
+const int eight[7] = {HIGH, HIGH, HIGH, HIGH, HIGH, HIGH, HIGH};
+const int nine[7] = {HIGH, HIGH, HIGH, LOW, LOW, HIGH, HIGH};
 
-There are five buttons connected to A0, A1, A2, A3 and A4.
-The  buttons from A0 to A3 are used to insert the right sequence while A4 to start the  game.
+const int* digits[10] = {zero, one, two, three, four, five, six, seven, eight, nine};
 
-When a wrong sequence is inserted all the leds will blink for three  time very fast otherwhise the
-inserted sequence is correct.
+const int firstSegmentPin = 2;
+const int lastSegmentPin = 8;
 
-*/
+const int firstMuxPin = 9;
+const int lastMuxPin = 12;
 
-const int MAX_LEVEL  = 100;
-int sequence[MAX_LEVEL];
-int your_sequence[MAX_LEVEL];
-int level  = 1;
+const int displayDigitCount = 4;
 
-int velocity = 1000;
-
-void setup() {
-pinMode(A0, INPUT);
-pinMode(A1,  INPUT);
-pinMode(A2, INPUT);
-pinMode(A3, INPUT);
-
-pinMode(2, OUTPUT);
-pinMode(3,  OUTPUT);
-pinMode(4, OUTPUT);
-pinMode(5, OUTPUT);
-
-digitalWrite(2, LOW);
-digitalWrite(3,  LOW);
-digitalWrite(4, LOW);
-digitalWrite(5, LOW);
+void resetDisplay()
+{
+for (int i = firstMuxPin; i <= lastMuxPin; ++i)
+{
+digitalWrite(i, HIGH);
+}
 }
 
+void writeDisplayDigit(int value, int index)
+{
+for (int i = 0; i < 7; ++i)
+{
+digitalWrite(i + firstSegmentPin, digits[value][i]);
+}
+
+digitalWrite(index + firstMuxPin, LOW);
+}
+
+void writeDisplay(int values[displayDigitCount])
+{
+for (int i = 0; i < displayDigitCount; ++i)
+{
+resetDisplay();
+writeDisplayDigit(values[i], i);
+delay(1);
+}
+}
+
+// the setup routine runs once when you press reset:
+void setup()
+{
+for (int i = firstSegmentPin; i <= lastMuxPin; ++i)
+{
+pinMode(i, OUTPUT); // initialize the digital pins as outputs.
+}
+
+resetDisplay();
+}
+
+// the loop routine runs over and over again forever:
 void loop()
 {
-if  (level == 1)
-generate_sequence();//generate a sequence;
-
-if (digitalRead(A4)  == LOW || level != 1) //If start button is pressed or you're winning
-{
-show_sequence();    //show the sequence
-get_sequence();     //wait for your sequence
-}
-}
-
-void  show_sequence()
-{
-digitalWrite(2, LOW);
-digitalWrite(3, LOW);
-digitalWrite(4,  LOW);
-digitalWrite(5, LOW);
-
-for (int i = 0; i < level; i++)
-{
-digitalWrite(sequence[i],  HIGH);
-delay(velocity);
-digitalWrite(sequence[i], LOW);
-delay(200);
-}
-}
-
-void  get_sequence()
-{
-int flag = 0; //this flag indicates if the sequence is correct
-
-for  (int i = 0; i < level; i++)
-{
-flag = 0;
-while(flag == 0)
-{
-if (digitalRead(A0)  == LOW)
-{
-digitalWrite(5, HIGH);
-your_sequence[i] = 5;
-flag = 1;
-delay(200);
-if  (your_sequence[i] != sequence[i])
-{
-wrong_sequence();
-return;
-}
-digitalWrite(5,  LOW);
-}
-
-if (digitalRead(A1) == LOW)
-{
-digitalWrite(4, HIGH);
-your_sequence[i]  = 4;
-flag = 1;
-delay(200);
-if (your_sequence[i] != sequence[i])
-{
-wrong_sequence();
-return;
-}
-digitalWrite(4,  LOW);
-}
-
-if (digitalRead(A2) == LOW)
-{
-digitalWrite(3, HIGH);
-your_sequence[i]  = 3;
-flag = 1;
-delay(200);
-if (your_sequence[i] != sequence[i])
-{
-wrong_sequence();
-return;
-}
-digitalWrite(3,  LOW);
-}
-
-if (digitalRead(A3) == LOW)
-{
-digitalWrite(2, HIGH);
-your_sequence[i]  = 2;
-flag = 1;
-delay(200);
-if (your_sequence[i] != sequence[i])
-{
-wrong_sequence();
-return;
-}
-digitalWrite(2,  LOW);
-}
-
-}
-}
-right_sequence();
-}
-
-void generate_sequence()
-{
-randomSeed(millis());  //in this way is really random!!!
-
-for (int i = 0; i < MAX_LEVEL; i++)
-{
-sequence[i]  = random(2,6);
-}
-}
-void wrong_sequence()
-{
-for (int i = 0; i < 3;  i++)
-{
-digitalWrite(2, HIGH);
-digitalWrite(3, HIGH);
-digitalWrite(4,  HIGH);
-digitalWrite(5, HIGH);
-delay(250);
-digitalWrite(2, LOW);
-digitalWrite(3,  LOW);
-digitalWrite(4, LOW);
-digitalWrite(5, LOW);
-delay(250);
-}
-level  = 1;
-velocity = 1000;
-}
-
-void right_sequence()
-{
-digitalWrite(2,  LOW);
-digitalWrite(3, LOW);
-digitalWrite(4, LOW);
-digitalWrite(5, LOW);
-delay(250);
-
-digitalWrite(2,  HIGH);
-digitalWrite(3, HIGH);
-digitalWrite(4, HIGH);
-digitalWrite(5, HIGH);
-delay(500);
-digitalWrite(2,  LOW);
-digitalWrite(3, LOW);
-digitalWrite(4, LOW);
-digitalWrite(5, LOW);
-delay(500);
-
-if  (level < MAX_LEVEL);
-level++;
-
-velocity -= 50; //increase difficulty
+int values[4] = {9,7,6,4};
+writeDisplay(values);
 }
